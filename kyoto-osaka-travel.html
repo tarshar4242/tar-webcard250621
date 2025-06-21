@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D & R 京阪五日遊 - 互動式旅行圖卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', 'PingFang TC', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2.8em;
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+        
+        .logo-banner {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.3em;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .logo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        
+        .travel-overview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .overview-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .overview-item h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .day-section {
+            margin-bottom: 50px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #e74c3c;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .day-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        
+        .day-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #e74c3c, #f39c12, #f1c40f);
+        }
+        
+        .day-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        
+        .day-title {
+            font-size: 1.8em;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .day-icon {
+            font-size: 2em;
+        }
+        
+        .day-date {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .day-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+        
+        .summary-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .summary-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .summary-card li {
+            padding: 5px 0;
+            border-bottom: 1px solid #ecf0f1;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .summary-card li::before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+            top: 5px;
+        }
+        
+        .day-detail {
+            display: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .day-detail.active {
+            display: block;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .detail-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .detail-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .detail-card h4 {
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .detail-card p {
+            margin-bottom: 10px;
+            line-height: 1.8;
+        }
+        
+        .highlight-box {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #f1c40f;
+        }
+        
+        .mood-indicator {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .mood-emoji {
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .mood-emoji:hover {
+            transform: scale(1.2);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #f1c40f;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .photo-placeholder {
+            background: rgba(255,255,255,0.1);
+            height: 150px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .photo-placeholder:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+        
+        .conclusion-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 35px;
+            border-radius: 15px;
+            margin-top: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .conclusion-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .conclusion-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .conclusion-content h3 {
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+        
+        .conclusion-content p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .ai-assistant {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .ai-assistant:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .ai-assistant::before {
+            content: '✈️';
+            font-size: 1.5em;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: #e74c3c;
+        }
+        
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #e74c3c, #f39c12, #f1c40f);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-left: 50px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: #f1c40f;
+            border-radius: 50%;
+            border: 3px solid white;
+        }
+        
+        .timeline-time {
+            font-weight: bold;
+            color: #f1c40f;
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .day-title {
+                font-size: 1.4em;
+            }
+            
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .day-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .detail-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✈️ D & R 京阪五日遊</h1>
+        <p class="subtitle">結伴心靈充電之旅 · 2025年6月4日-8日</p>
+        
+        <div class="logo-banner">
+            <button class="logo" onclick="showModal('aboutModal')">
+                🌸 Tarshar 知識圖卡 2025 🌸
+            </button>
+        </div>
+        
+        <div class="travel-overview">
+            <h2>🎯 旅程概覽</h2>
+            <div class="overview-grid">
+                <div class="overview-item">
+                    <h3>📅 旅行日期</h3>
+                    <p>2025年6月4日-8日</p>
+                    <p>共5天4夜</p>
+                </div>
+                <div class="overview-item">
+                    <h3>👥 旅行成員</h3>
+                    <p>Tarshar </p>
+                    <p>Rita </p>
+                </div>
+                <div class="overview-item">
+                    <h3>🗺️ 主要城市</h3>
+                    <p>京都 (2)</p>
+                    <p>大阪 (3天)</p>
+                </div>
+                <div class="overview-item">
+                    <h3>🎭 特色體驗</h3>
+                    <p>京都藝能</p>
+                    <p>大阪萬博</p>
+                    <p>寶塚歌劇</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 1 -->
+        <div class="day-section" onclick="toggleDetail('day1Detail')">
+            <div class="day-header">
+                <div class="day-title">
+                    <span class="day-icon">✈️</span>
+                    <div>
+                        <div>Day 1 - 啟程日</div>
+                        <div class="day-date">2025/6/4 (三) - 桃園 → 京都</div>
+                    </div>
+                </div>
+                <div style="font-size: 1.5em;">▼</div>
+            </div>
+            
+            <div class="day-summary">
+                <div class="summary-card">
+                    <h4>🚀 交通行程</h4>
+                    <ul>
+                        <li>CX564 桃園 11:05 → 關西機場 14:55</li>
+                        <li>HARUKA 特急 16:43 → 京都 17:57</li>
+                        <li>入住京都法華俱樂部飯店</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>🍜 晚餐體驗</h4>
+                    <ul>
+                        <li>京都站內站立式烏龍麵店</li>
+                        <li>Tarshar：天婦羅烏龍麵</li>
+                        <li>Rita：雞肉烏龍麵</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>💭 心情札記</h4>
+                    <ul>
+                        <li>語言隔閡造成些微混亂</li>
+                        <li>站著吃烏龍麵的意外驚喜</li>
+                        <li>體會到旅行的小意外之美</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="day1Detail" class="day-detail">
+                <div class="detail-content">
+                    <div class="detail-card">
+                        <h4>🛫 出發準備</h4>
+                        <p>10:15 抵達桃園機場候機，辦理行李託運後候機休息。CX564起飛，全程英文溝通讓人有些措手不及，但順利完成通關。</p>
+                        <div class="highlight-box">
+                            <strong>小插曲：</strong>英文溝通雖有挑戰，但成功完成所有手續，展現了母女倆的應變能力。
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>🇯🇵 抵達日本</h4>
+                        <p>14:55 抵達關西機場，使用 QR code 快速通關。購買 HARUKA 特急車票時，因 Klook 優惠票流程繁複，最終直接購票 ¥3950×2。</p>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number">¥7,900</div>
+                                <div class="stat-label">車票費用</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">1h14m</div>
+                                <div class="stat-label">車程時間</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>🍜 晚餐波折</h4>
+                        <p>原本預定前往「うなぎ 四代目 菊川」享用鰻魚飯，但因找不到正確位置，在京都車站內徘徊近兩小時，最終選擇站著吃烏龍麵。</p>
+                        <div class="highlight-box">
+                            <strong>意外收穫：</strong>站著吃烏龍麵的簡樸用餐方式，成為今日最有趣的亮點！
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 2 -->
+        <div class="day-section" onclick="toggleDetail('day2Detail')">
+            <div class="day-header">
+                <div class="day-title">
+                    <span class="day-icon">⛩️</span>
+                    <div>
+                        <div>Day 2 - 神社參拜 × 京都藝能日</div>
+                        <div class="day-date">2025/6/5 (四) - 京都深度遊</div>
+                    </div>
+                </div>
+                <div style="font-size: 1.5em;">▼</div>
+            </div>
+            
+            <div class="day-summary">
+                <div class="summary-card">
+                    <h4>⛩️ 神社參拜</h4>
+                    <ul>
+                        <li>下鴨神社清晨參拜</li>
+                        <li>清水寺求籤：Tarshar「半吉」、Rita「大吉」</li>
+                        <li>二年坂、三年坂散策</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>🎭 藝能表演</h4>
+                    <ul>
+                        <li>祇園 Corner 傳統藝能演出</li>
+                        <li>箏樂與花道搭配</li>
+                        <li>舞樂五聲調和</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>🛍️ 夜間採購</h4>
+                    <ul>
+                        <li>Three Coin 大採購</li>
+                        <li>行李配送預約完成</li>
+                        <li>準備明日大阪萬博</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="day2Detail" class="day-detail">
+                <div class="detail-content">
+                    <div class="detail-card">
+                        <h4>🌅 清晨下鴨神社</h4>
+                        <p>清早從京都法華俱樂部出發，走訪《下鴨神社》，欣賞清晨寧靜氛圍。在神社旁的超市購買了「溫泉番茄」與「炸魚天婦羅」，風味極佳。</p>
+                        <div class="mood-indicator">
+                            <span class="mood-emoji">😌</span>
+                            <span class="mood-emoji">🙏</span>
+                            <span class="mood-emoji">🌸</span>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>🚌 清水寺之旅</h4>
+                        <p>利用京都市巴士 206 號線前往清水寺，沿著二年坂與三年坂緩緩走上山。抽籤結果：Tarshar 抽到「半吉」，Rita 抽到「大吉」。</p>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number">18,000</div>
+                                <div class="stat-label">今日步數</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">206</div>
+                                <div class="stat-label">巴士路線</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>🎭 祇園藝能饗宴</h4>
+                        <p>18:00 準時入場，觀賞多段藝能節目。其中以箏樂與花道搭配、舞樂五聲調和，最為震撼與感動。舞台上演出與音樂互動極具層次感。</p>
+                        <div class="highlight-box">
+                            <strong>文化體驗：</strong>這是一場深具文化涵養的藝術饗宴，讓倆人都深受感動。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 3 -->
+        <div class="day-section" onclick="toggleDetail('day3Detail')">
+            <div class="day-header">
+                <div class="day-title">
+                    <span class="day-icon">🎡</span>
+                    <div>
+                        <div>Day 3 - 夢洲萬博探險記</div>
+                        <div class="day-date">2025/6/6 (五) - 大阪萬博 EXPO DAY</div>
+                    </div>
+                </div>
+                <div style="font-size: 1.5em;">▼</div>
+            </div>
+            
+            <div class="day-summary">
+                <div class="summary-card">
+                    <h4>🎡 萬博體驗</h4>
+                    <ul>
+                        <li>住友館：生態永續主題</li>
+                        <li>台灣館：珍珠奶茶救贖</li>
+                        <li>排隊地獄模式啟動</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>🚇 交通挑戰</h4>
+                    <ul>
+                        <li>京都→大阪→夢洲</li>
+                        <li>Google Maps 眼花撩亂</li>
+                        <li>進場排隊1小時</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>🍽️ 晚餐波折</h4>
+                    <ul>
+                        <li>大阪燒店家滿座</li>
+                        <li>意外發現西班牙餐館</li>
+                        <li>飯店大浴場舒壓</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="day3Detail" class="day-detail">
+                <div class="detail-content">
+                    <div class="detail-card">
+                        <h4>🌞 晨間出發</h4>
+                        <p>原訂 6:30 準備起床，結果拖到快 8 點才吃早餐。約 8:30 抵達京都車站準備搭車，Google Maps 看得眼花撩亂，一早就讓腦細胞死光。</p>
+                        <div class="mood-indicator">
+                            <span class="mood-emoji">😵</span>
+                            <span class="mood-emoji">😅</span>
+                            <span class="mood-emoji">💪</span>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>🎡 萬博排隊地獄</h4>
+                        <p>夢洲站大排長龍，光是要進會場入口就排了快 1 小時。排隊途中手忙腳亂處理 KLOOK 購票 → 官方 QR Code 註冊轉換，進場時已經全身大汗。</p>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number">1h</div>
+                                <div class="stat-label">進場排隊</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">1.5h</div>
+                                <div class="stat-label">住友館排隊</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">18,000+</div>
+                                <div class="stat-label">總步數</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>🥤 台灣館珍珠奶茶救贖</h4>
+                        <p>大約 3 點抵達台灣館，可惜預約已截止，僅能於館外參觀。決定支持台灣，現場排隊購買「珍珠奶茶」，排了又是一陣子，好在順利入手。</p>
+                        <div class="highlight-box">
+                            <strong>感動時刻：</strong>Rita 堅持排台灣館讓我很感動，坐在場館外吹風喝奶茶，享受屬於台灣的味道。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 4 -->
+        <div class="day-section" onclick="toggleDetail('day4Detail')">
+            <div class="day-header">
+                <div class="day-title">
+                    <span class="day-icon">🎭</span>
+                    <div>
+                        <div>Day 4 - 夢幻寶塚成真日</div>
+                        <div class="day-date">2025/6/7 (六) - 寶塚歌劇 ✕ 散策</div>
+                    </div>
+                </div>
+                <div style="font-size: 1.5em;">▼</div>
+            </div>
+            
+            <div class="day-summary">
+                <div class="summary-card">
+                    <h4>🎭 寶塚歌劇</h4>
+                    <ul>
+                        <li>2025花組《惡魔城 Dracula》</li>
+                        <li>永久輝せあ領銜主演</li>
+                        <li>夢想成真的感動時刻</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>🌸 花之道散策</h4>
+                    <ul>
+                        <li>寶塚站周邊購物區</li>
+                        <li>精品小店、咖啡館</li>
+                        <li>氣質獨特的街區氛圍</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>🍚 晚餐時光</h4>
+                    <ul>
+                        <li>日式豬排定食</li>
+                        <li>大阪梅田露天神社</li>
+                        <li>春野壽美禮追星夜</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="day4Detail" class="day-detail">
+                <div class="detail-content">
+                    <div class="detail-card">
+                        <h4>🌸 寶塚夢幻之旅</h4>
+                        <p>雖然昨晚走得很累，今天睡到九點才起床。搭乘阪急急行，特意選擇下一班空車，沿途看見有趣站名如「雲雀丘花屋敷」，感覺非常有詩意。</p>
+                        <div class="mood-indicator">
+                            <span class="mood-emoji">😴</span>
+                            <span class="mood-emoji">🌸</span>
+                            <span class="mood-emoji">✨</span>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>🎭 夢想成真時刻</h4>
+                        <p>進入寶塚大劇場，欣賞 2025花組《惡魔城 Dracula》首演。雖然柚香光已退團，現任 Top Star 永久輝せあ領銜主演阿魯卡多，舞台效果、服裝燈光皆極具魅力。</p>
+                        <div class="highlight-box">
+                            <strong>感動語錄：</strong>「一場大阪的寶塚之約，曾經放在心中成為無法達成的夢想，今天真的成真了，內心滿滿感動，這趟旅行值回票價。」
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>🌙 完美收尾</h4>
+                        <p>晚餐選擇了心念已久的日式豬排定食，米飯香甜、豬排酥脆恰到好處。回到飯店後，母女倆邊吃水果邊泡茶，一起追春野壽美禮的影片。</p>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number">9:00</div>
+                                <div class="stat-label">起床時間</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">阪急</div>
+                                <div class="stat-label">交通方式</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Day 5 -->
+        <div class="day-section" onclick="toggleDetail('day5Detail')">
+            <div class="day-header">
+                <div class="day-title">
+                    <span class="day-icon">🏠</span>
+                    <div>
+                        <div>Day 5 - 返程日</div>
+                        <div class="day-date">2025/6/8 (日) - 京都 → 大阪關西機場</div>
+                    </div>
+                </div>
+                <div style="font-size: 1.5em;">▼</div>
+            </div>
+            
+            <div class="day-summary">
+                <div class="summary-card">
+                    <h4>🚃 交通挑戰</h4>
+                    <ul>
+                        <li>JR關空快速車廂分離事件</li>
+                        <li>7號車廂→4號車廂驚險換車</li>
+                        <li>行李箱輪子破損</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>🛫 機場流程</h4>
+                    <ul>
+                        <li>托運與退稅櫃台</li>
+                        <li>CX565 16:20 起飛</li>
+                        <li>18:15 抵達台灣</li>
+                    </ul>
+                </div>
+                <div class="summary-card">
+                    <h4>💭 旅程總結</h4>
+                    <ul>
+                        <li>母女深度交流</li>
+                        <li>學會互相體諒</li>
+                        <li>心靈充電完成</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="day5Detail" class="day-detail">
+                <div class="detail-content">
+                    <div class="detail-card">
+                        <h4>☀️ 最後的早晨</h4>
+                        <p>今天是旅程的最後一天，沒有特別安排緊湊的景點，只想帶著放鬆的心情，享受最後在大阪的時光。我們睡到自然醒，在飯店簡單整理好行李。</p>
+                        <div class="mood-indicator">
+                            <span class="mood-emoji">😌</span>
+                            <span class="mood-emoji">😢</span>
+                            <span class="mood-emoji">💕</span>
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>🚃 車廂分離驚險記</h4>
+                        <p>本來想搭乘直達關空的特急列車，結果不小心搭上了JR關空快速。列車中途會切割成兩個方向，1～4號車廂前往機場，其餘往別的方向。我們剛好坐在 7 號車廂，還好廣播有提醒，趕緊於中途站衝去換到 4 號車廂。</p>
+                        <div class="highlight-box">
+                            <strong>驚險時刻：</strong>算是驚險但順利完成！這次經驗讓母女倆都學會了在旅行中保持冷靜和應變。
+                        </div>
+                    </div>
+                    <div class="detail-card">
+                        <h4>💕 結伴倆人的成熟時刻</h4>
+                        <p>在車上和R小小爭執了一下，因為她對溝通時常顯得沒有耐性。我們也藉此稍微提醒對方，旅途中更需要互相體諒和協助。Rita這次幫忙處理不少流程，也主動詢問站務人員，特別負責。</p>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number">16:20</div>
+                                <div class="stat-label">起飛時間</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">18:15</div>
+                                <div class="stat-label">抵達時間</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="conclusion-section">
+            <div class="conclusion-content">
+                <h3>🎯 旅程總結：倆人心靈充電之旅</h3>
+                <p>五天的旅程，五種心情，從一開始的慌張、不安，到中途的感動、共鳴與驚艷，再到最後的依依不捨與沉澱。旅行，果然不只是地點的轉換，而是情緒與記憶的累積。</p>
+                
+                <p>我與 Rita 的結伴旅程，是一次心靈的交會，是一起經歷、一起成熟的紀錄。從京都的神社參拜到寶塚的夢想成真，從萬博的排隊地獄到機場的車廂驚險，每一個時刻都成為珍貴的回憶。</p>
+                
+                <div style="text-align: left; margin-top: 20px;">
+                    <h4>🌟 旅程亮點回顧</h4>
+                    <ul style="text-align: left;">
+                        <li>🎭 <strong>寶塚夢想成真</strong>：多年心願終於實現</li>
+                        <li>⛩️ <strong>京都文化體驗</strong>：神社參拜與藝能表演</li>
+                        <li>🎡 <strong>萬博探險</strong>：台灣館珍珠奶茶救贖</li>
+                        <li>🍜 <strong>意外美食</strong>：站著吃烏龍麵的驚喜</li>
+                        <li>💕 <strong>交心時刻</strong>：學會互相體諒與協助</li>
+                    </ul>
+                </div>
+                
+                <p style="margin-top: 20px; font-style: italic;">
+                    「走過的風景會退場，留下的才是人生的篇章。」<br>
+                    未來回頭看這本日誌，不只是重溫行程，更是一種肯定自己選擇出發的勇氣。
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant -->
+    <div class="ai-assistant" onclick="showModal('aiModal')" title="點擊獲得旅行助手幫助"></div>
+
+    <!-- Modals -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('aboutModal')">&times;</span>
+            <h2>🌸 關於這趟母女旅行</h2>
+            <p>這是一趟期盼已久的自由行，是我與女兒 Rita 的母女旅行，也是我送給自己的心靈充電之旅。從6月4日搭上國泰班機起飛那刻起，每天都有計劃，但也總留一點餘裕給生活的意外和驚喜。</p>
+            
+            <div style="margin-top: 20px;">
+                <h3>🎯 旅行特色</h3>
+                <ul style="text-align: left;">
+                    <li>💕 <strong>母女深度交流</strong>：五天的心靈對話與成長</li>
+                    <li>🎭 <strong>文化體驗</strong>：神社參拜、藝能表演、寶塚歌劇</li>
+                    <li>🎡 <strong>現代科技</strong>：大阪萬博2025探險</li>
+                    <li>🍜 <strong>美食探索</strong>：從高級料理到街邊小食</li>
+                    <li>🚇 <strong>交通挑戰</strong>：學會在日本自由行</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="aiModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('aiModal')">&times;</span>
+            <h2>✈️ 旅行助手</h2>
+            <h3>🎯 專屬旅行諮詢</h3>
+            <p>我是你的專屬旅行助手，可以協助你：</p>
+            
+            <div style="margin-top: 20px;">
+                <h3>💬 服務內容</h3>
+                <ul style="text-align: left;">
+                    <li>🗺️ <strong>行程規劃建議</strong>：基於這次經驗提供改進建議</li>
+                    <li>🚇 <strong>交通攻略</strong>：日本自由行交通技巧</li>
+                    <li>🍜 <strong>美食推薦</strong>：京都大阪必吃美食</li>
+                    <li>🎭 <strong>文化體驗</strong>：日本傳統文化活動</li>
+                    <li>💕 <strong>親子旅行</strong>：母女旅行的心得分享</li>
+                </ul>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 10px;">
+                <p><strong>💡 小貼士：</strong>點擊頁面上任何圓形按鈕都可以獲得詳細說明！</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模態窗口控制
+        function showModal(modalId) {
+            const activeModal = document.querySelector('.modal.active');
+            if (activeModal) {
+                closeModal(activeModal.id);
+            }
+
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // 詳細面板切換
+        function toggleDetail(detailId) {
+            const detail = document.getElementById(detailId);
+            detail.classList.toggle('active');
+        }
+        
+        // 點擊模態窗口外部關閉
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        // ESC 鍵關閉模態窗口
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    activeModal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        });
+        
+        // 頁面載入動畫
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.day-section, .travel-overview, .conclusion-section');
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            sections.forEach(section => {
+                section.style.opacity = '0';
+                observer.observe(section);
+            });
+        });
+        
+        // CSS 動畫定義
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html> 
